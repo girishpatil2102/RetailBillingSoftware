@@ -5,21 +5,45 @@ import com.girish.billingSoftware.io.CategoryRequest;
 import com.girish.billingSoftware.io.CategoryResponse;
 import com.girish.billingSoftware.repository.CategoryRepository;
 import com.girish.billingSoftware.service.CategoryService;
+import com.girish.billingSoftware.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
+    private final FileUploadService fileUploadService;
     @Override
-    public CategoryResponse add(CategoryRequest request) {
+    public CategoryResponse add(CategoryRequest request, MultipartFile file) {
+        String imgUrl = fileUploadService.uploadFile(file);
         CategoryEntity newCategory = convertToEntity(request);
+        newCategory.setImgUrl(imgUrl);
         newCategory = repository.save(newCategory);
         return convertToResponse(newCategory);
 
+    }
+
+    @Override
+    public List<CategoryResponse> read() {
+        return repository.findAll()
+                .stream()
+                .map(categoryEntity -> convertToResponse(categoryEntity))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public void delete(String categoryId) {
+        CategoryEntity existingCategory = repository.findByCategoryId(categoryId)
+                .orElseThrow(()-> new RuntimeException("Category not found :"+categoryId));
+        fileUploadService.deleteFile(existingCategory.getImgUrl());
+        repository.delete(existingCategory);
     }
 
     private CategoryResponse convertToResponse(CategoryEntity newCategory) {
