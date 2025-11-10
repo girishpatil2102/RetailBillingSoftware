@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class CategoryController {
             req = objectMapper.readValue(categoryString, CategoryRequest.class);
             return categoryService.add(req, file);
         } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Exception occured while passing the JSON: "+e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Exception occurred while passing the JSON: "+e.getMessage());
         }
 
         // Pass DTO + file to service
