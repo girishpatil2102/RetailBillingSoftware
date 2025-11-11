@@ -1,6 +1,8 @@
 import React, { useContext,useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import './CategoryList.css';
+import toast from "react-hot-toast";
+import { deleteCategory } from "../../Service/CategoryService";
 
 const CategoryList = () => {
 	const { categories, setCategories } = useContext(AppContext);
@@ -13,17 +15,17 @@ const CategoryList = () => {
 
   const deleteByCategoryId = async (categoryId) => {
     try {
-      const response = await deleteByCategoryId(categoryId);
+      const response = await deleteCategory(categoryId);
       if(response.status ===204){
         const updatedCategories = categories.filter(category => category.categoryId !== categoryId);
         setCategories(updatedCategories);
-        //toast message
+        toast.success("Category Deleted Successfully");
       } else{
-        //toast message
+        toast.error("Failed to delete category");
       }
     } catch (error) {
       console.error("Error deleting category:", error);
-      //toast message
+      toast.error("Failed to delete category");
     }
   }
 	return (
@@ -58,7 +60,7 @@ const CategoryList = () => {
                 <p className="mb-0 text-white">{category.items} Items</p>
               </div>
               <div>
-                <button className="btn btn-sm btn-danger" onClick={() => deleteByCategoryId(category.id)}>
+                <button className="btn btn-sm btn-danger" onClick={() => deleteByCategoryId(category.categoryId)}>
                   <i className="bi bi-trash">
                     
                   </i>

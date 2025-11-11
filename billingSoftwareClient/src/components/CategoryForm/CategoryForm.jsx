@@ -1,11 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { assets } from '../../assets/assets.js';
 import { addCategory } from '../../Service/CategoryService';
+import toast from 'react-hot-toast';
+import { AppContext } from '../../context/AppContext';
 
 const MAX_DESCRIPTION_LENGTH = 255;
 
 const CategoryForm = () => {
     const fileInputRef = useRef(null);
+    const { setCategories } = useContext(AppContext);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -37,12 +40,12 @@ const CategoryForm = () => {
         
         // Basic validation
         if (!formData.name.trim()) {
-            alert('Please enter a category name');
+            toast.error('enter a category name');
             return;
         }
         
         if (!formData.image) {
-            alert('Please select an image for the category');
+            toast.error('select an image');
             return;
         }
         
@@ -78,7 +81,12 @@ const CategoryForm = () => {
             const response = await addCategory(formDataToSend);
             console.log('Category added successfully:', response.data);
             
-            alert('Category added successfully!');
+            toast.success('Category added successfully');
+            
+            // Update context with new category
+            if (response.data) {
+                setCategories(prev => [...prev, response.data]);
+            }
             
             // Reset form
             setFormData({
@@ -88,8 +96,7 @@ const CategoryForm = () => {
                 backgroundColor: '#808080'
             });
             
-            // Refresh the page to show updated category list
-            window.location.reload();
+            // No need to reload the page anymore!
         } catch (error) {
             console.error('Error adding category:', error);
             console.error('Error response:', error.response);
@@ -103,13 +110,13 @@ const CategoryForm = () => {
                                    error.response.data?.error || 
                                    error.response.data || 
                                    error.response.statusText;
-                alert(`Failed to add category: ${errorMessage}`);
+                toast.error(`Failed to add category: ${errorMessage}`);
             } else if (error.request) {
                 // Request was made but no response received
-                alert('Failed to connect to server. Please check if the backend is running.');
+                toast.error('Failed to connect to server. Please check if the backend is running.');
             } else {
                 // Something else happened
-                alert('Failed to add category. Please try again.');
+                toast.error('Failed to add category. Please try again.');
             }
         }
     };
@@ -126,7 +133,7 @@ const CategoryForm = () => {
             </style>
             <h3 className="mb-4">Add New Category</h3>
             <div className="row w-100 justify-content-center">
-                <div className="card col-md-8 form-container" style={{ maxWidth: '700px', backgroundColor: '#212629' }}>
+                <div className="card col-md-12 form-container" style={{ maxWidth: '700px', backgroundColor: '#212629' }}>
                 <div className="card-body">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">

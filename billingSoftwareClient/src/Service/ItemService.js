@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080/api/v1.0/items'; // replace with your actual API URL
+const BASE_URL = 'http://localhost:8081/api/v1.0/items'; // replace with your actual API URL
 
 // Add a new item
 export const addItem = async (formData) => {
