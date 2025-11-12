@@ -13,14 +13,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@CrossOrigin("*")
+
 @RestController
-@RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @PostMapping
+    @PostMapping("/admin/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponse addCategory(@RequestPart("category") String categoryString,
                                         @RequestPart("file")MultipartFile file) throws JsonProcessingException {
@@ -44,7 +43,7 @@ public class CategoryController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{categoryId}")
+    @DeleteMapping("/admin/categories/{categoryId}")
     void remove(@PathVariable String categoryId){
         try{
         categoryService.delete(categoryId);
